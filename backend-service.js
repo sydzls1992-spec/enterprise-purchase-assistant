@@ -809,7 +809,7 @@ class DouyinAPI {
 }
 
 // 外部API集成类
-class XiaohongshuAPI {
+class XiaohongshuExternalAPI {
     constructor() {
         this.baseURL = 'https://api.xiaohongshu.com';
         this.isActive = true;
