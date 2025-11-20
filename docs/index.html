@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企购内购信息助手</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        .content {
+            padding: 40px;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .feature-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            border-left: 4px solid #007bff;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,123,255,0.3);
+        }
+        .feature-card h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 1.3em;
+        }
+        .feature-card p {
+            margin: 0;
+            color: #666;
+            line-height: 1.6;
+        }
+        .cta-section {
+            text-align: center;
+            padding: 40px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            margin: 10px;
+            transition: transform 0.3s ease;
+        }
+        .cta-button:hover {
+            transform: scale(1.05);
+        }
+        .tech-stack {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .tech-badge {
+            background: #e9ecef;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            color: #495057;
+        }
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: #343a40;
+            color: white;
+        }
+        .demo-section {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        .demo-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1em;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+        .demo-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .demo-button:hover {
+            background: #0056b3;
+        }
+        .result-area {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛍️ 企购内购信息助手</h1>
+            <p>企业内购信息自动化采集与处理系统</p>
+        </div>
+
+        <div class="content">
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📱 小红书数据采集</h3>
+                    <p>智能采集小红书平台上的企业内购信息，包括商品详情、价格、优惠活动等关键数据。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🤖 AI智能分析</h3>
+                    <p>运用人工智能技术对采集的数据进行深度分析，提取有价值的信息和趋势。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 数据可视化</h3>
+                    <p>通过直观的图表和报表展示分析结果，帮助用户快速了解市场动态。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔄 实时更新</h3>
+                    <p>支持实时数据更新和监控，确保信息的时效性和准确性。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🛡️ 安全可靠</h3>
+                    <p>采用先进的安全技术保护数据隐私，确保信息安全。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🚀 高性能</h3>
+                    <p>优化的系统架构，支持高并发访问和大数据处理。</p>
+                </div>
+            </div>
+
+            <div class="demo-section">
+                <h3>🎯 快速体验</h3>
+                <p style="margin-bottom: 20px; color: #666;">输入关键词，体验智能搜索功能：</p>
+                <input type="text" class="demo-input" placeholder="请输入商品关键词或品牌名称..." id="searchInput">
+                <button class="demo-button" onclick="performSearch()">开始搜索</button>
+                <div class="result-area" id="resultArea">
+                    <h4>🔍 搜索结果</h4>
+                    <p id="resultText">正在处理您的搜索请求...</p>
+                </div>
+            </div>
+
+            <div class="cta-section">
+                <h2>🚀 立即开始使用</h2>
+                <p style="margin-bottom: 30px; color: #666;">选择适合您的部署方式，快速搭建企业内购信息处理系统</p>
+                <a href="#deploy-options" class="cta-button">查看部署选项</a>
+                <a href="https://github.com/sydzls1992-spec/enterprise-purchase-assistant" class="cta-button" target="_blank">GitHub仓库</a>
+                
+                <div class="tech-stack">
+                    <span class="tech-badge">Node.js</span>
+                    <span class="tech-badge">Express</span>
+                    <span class="tech-badge">HTML5</span>
+                    <span class="tech-badge">CSS3</span>
+                    <span class="tech-badge">JavaScript</span>
+                    <span class="tech-badge">Docker</span>
+                    <span class="tech-badge">AI</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 企购内购信息助手. 保留所有权利.</p>
+            <p style="margin-top: 10px; opacity: 0.8;">
+                <a href="https://github.com/sydzls1992-spec/enterprise-purchase-assistant" style="color: #fff;">GitHub</a> | 
+                <a href="#" style="color: #fff;">文档</a> | 
+                <a href="#" style="color: #fff;">支持</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function performSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const resultArea = document.getElementById('resultArea');
+            const resultText = document.getElementById('resultText');
+            
+            if (searchInput.value.trim() === '') {
+                alert('请输入搜索关键词');
+                return;
+            }
+            
+            resultArea.style.display = 'block';
+            resultText.innerHTML = `
+                <strong>搜索关键词：</strong>${searchInput.value}<br><br>
+                <strong>找到相关结果：</strong><br>
+                • 企业内购优惠商品 - 最高5折优惠<br>
+                • 员工专享购物清单 - 限时特惠<br>
+                • 内部购物推荐 - 品质保证<br>
+                • 团购活动信息 - 批量优惠<br><br>
+                <em>💡 提示：完整功能需要部署后端服务才能使用</em>
+            `;
+        }
+        
+        // 添加回车键支持
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+    </script>
+</body>
+</html>
