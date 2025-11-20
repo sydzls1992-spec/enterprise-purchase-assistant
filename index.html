@@ -1,0 +1,2628 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="企购内购信息助手 - 专业的企业采购数据分析和智能管理平台">
+    <meta name="keywords" content="企业采购,数据分析,智能管理,内购信息,采购助手">
+    <meta name="author" content="企购内购信息助手团队">
+    <meta name="robots" content="index, follow">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="theme-color" content="#3B82F6">
+    <title>企购内购信息助手 - 用户界面</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" as="style">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js" as="script">
+    
+    <!-- DNS prefetch for external domains -->
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+    
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        success: '#10B981',
+                        warning: '#F59E0B',
+                        danger: '#EF4444',
+                        neutral: {
+                            100: '#F3F4F6',
+                            200: '#E5E7EB',
+                            300: '#D1D5DB',
+                            400: '#9CA3AF',
+                            500: '#6B7280',
+                            600: '#4B5563',
+                            700: '#374151',
+                            800: '#1F2937',
+                            900: '#111827',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        card: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                        'card-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1;
+            }
+            /* 性能优化样式 */
+            .will-change-transform {
+                will-change: transform;
+            }
+            .gpu-accelerated {
+                transform: translateZ(0);
+                backface-visibility: hidden;
+                perspective: 1000px;
+            }
+            /* 加载动画 */
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .fade-in {
+                animation: fadeIn 0.6s ease-out;
+            }
+            /* 骨架屏样式 */
+            @keyframes shimmer {
+                0% { background-position: -1000px 0; }
+                100% { background-position: 1000px 0; }
+            }
+            .skeleton {
+                background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+                background-size: 1000px 100%;
+                animation: shimmer 2s infinite;
+            }
+        }
+    </style>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIuWbvueJh+W6puWbvemdh+ekvuWcsOS6jOWbvSIsCiAgInNob3J0X25hbWUiOiAi5Zu+5omL5bqm5Zu+6ZGH56S+5Zyw5LqM5Zu9IiwKICAiZGVzY3JpcHRpb24iOiAi5Zue5qCH5b6u5L+h5omL5bqm5Zu+6ZGH56S+5Zyw5LqM5Zu9IiwKICAic3RhcnRfdXJsIjogIi8iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMzQjgyRjYiLAogInRoZW1lX2NvbG9yIjogIiMzQjgyRjYiCn0=">
+    
+    <!-- 性能优化脚本 -->
+    <script>
+        // 预加载关键资源
+        if ('serviceWorker' in navigator) {
+            // 注册 Service Worker（如果有的话）
+            navigator.serviceWorker.register('/sw.js').catch(() => {
+                // 忽略 Service Worker 注册失败
+            });
+        }
+        
+        // 监听页面加载性能
+        window.addEventListener('load', () => {
+            if ('performance' in window) {
+                const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+                console.log(`页面加载时间: ${loadTime}ms`);
+            }
+        });
+        
+        // 防抖函数
+        window.debounce = function(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        };
+        
+        // 节流函数
+        window.throttle = function(func, limit) {
+            let inThrottle;
+            return function() {
+                const args = arguments;
+                const context = this;
+                if (!inThrottle) {
+                    func.apply(context, args);
+                    inThrottle = true;
+                    setTimeout(() => inThrottle = false, limit);
+                }
+            };
+        };
+    </script>
+</head>
+<body class="bg-neutral-100 font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边导航栏 -->
+        <aside class="w-64 bg-white shadow-lg hidden md:block">
+            <div class="p-4 border-b border-neutral-200">
+                <h1 class="text-xl font-bold text-primary flex items-center">
+                    <i class="fa fa-shopping-bag mr-2"></i>
+                    企购内购信息助手
+                </h1>
+            </div>
+            <nav class="mt-4">
+                <ul>
+                    <li class="mb-1">
+                        <a href="#dashboard" class="nav-link flex items-center px-4 py-3 text-neutral-700 bg-neutral-100 border-l-4 border-primary" data-target="dashboard-section">
+                            <i class="fa fa-tachometer mr-3"></i>
+                            <span>数据概览</span>
+                        </a>
+                    </li>
+                    <li class="mb-1">
+                        <a href="#data-collection" class="nav-link flex items-center px-4 py-3 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-700" data-target="data-collection-section">
+                            <i class="fa fa-download mr-3"></i>
+                            <span>数据采集与处理</span>
+                        </a>
+                    </li>
+                    <li class="mb-1">
+                        <a href="#information-management" class="nav-link flex items-center px-4 py-3 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-700" data-target="information-management-section">
+                            <i class="fa fa-list-alt mr-3"></i>
+                            <span>信息管理工作台</span>
+                        </a>
+                    </li>
+                    <li class="mb-1">
+                        <a href="#content-production" class="nav-link flex items-center px-4 py-3 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-700" data-target="content-production-section">
+                            <i class="fa fa-pencil-square-o mr-3"></i>
+                            <span>内容生产与发布</span>
+                        </a>
+                    </li>
+                    <li class="mb-1">
+                        <a href="#ai-analysis" class="nav-link flex items-center px-4 py-3 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-700" data-target="ai-analysis-section">
+                            <i class="fa fa-brain mr-3"></i>
+                            <span>AI智能分析</span>
+                        </a>
+                    </li>
+                    <li class="mb-1">
+                        <a href="#system-management" class="nav-link flex items-center px-4 py-3 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-700" data-target="system-management-section">
+                            <i class="fa fa-cog mr-3"></i>
+                            <span>系统管理</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="absolute bottom-0 w-64 p-4 border-t border-neutral-200">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white">
+                        <i class="fa fa-user"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-neutral-700">管理员</p>
+                        <p class="text-xs text-neutral-500">admin@example.com</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 移动端导航按钮 -->
+        <div class="md:hidden fixed bottom-4 right-4 z-50">
+            <button id="mobile-nav-toggle" class="bg-primary text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg">
+                <i class="fa fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- 移动端导航菜单 -->
+        <div id="mobile-nav" class="fixed inset-0 bg-neutral-900 bg-opacity-50 z-40 hidden md:hidden">
+            <div class="bg-white w-64 h-full overflow-y-auto transform transition-transform duration-300 -translate-x-full" id="mobile-nav-content">
+                <div class="p-4 border-b border-neutral-200 flex justify-between items-center">
+                    <h1 class="text-xl font-bold text-primary">企购内购信息助手</h1>
+                    <button id="mobile-nav-close" class="text-neutral-500 hover:text-neutral-700">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+                <nav class="mt-4">
+                    <ul>
+                        <li class="mb-1">
+                            <a href="#dashboard" class="mobile-nav-link flex items-center px-4 py-3 text-neutral-700 bg-neutral-100 border-l-4 border-primary" data-target="dashboard-section">
+                                <i class="fa fa-tachometer mr-3"></i>
+                                <span>数据概览</span>
+                            </a>
+                        </li>
+                        <li class="mb-1">
+                            <a href="#data-collection" class="mobile-nav-link flex items-center px-4 py-3 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-700" data-target="data-collection-section">
+                                <i class="fa fa-download mr-3"></i>
+                                <span>数据采集与处理</span>
+                            </a>
+                        </li>
+                        <li class="mb-1">
+                            <a href="#information-management" class="mobile-nav-link flex items-center px-4 py-3 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-700" data-target="information-management-section">
+                                <i class="fa fa-list-alt mr-3"></i>
+                                <span>信息管理工作台</span>
+                            </a>
+                        </li>
+                        <li class="mb-1">
+                            <a href="#content-production" class="mobile-nav-link flex items-center px-4 py-3 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-700" data-target="content-production-section">
+                                <i class="fa fa-pencil-square-o mr-3"></i>
+                                <span>内容生产与发布</span>
+                            </a>
+                        </li>
+                        <li class="mb-1">
+                            <a href="#ai-analysis" class="mobile-nav-link flex items-center px-4 py-3 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-700" data-target="ai-analysis-section">
+                                <i class="fa fa-brain mr-3"></i>
+                                <span>AI智能分析</span>
+                            </a>
+                        </li>
+                        <li class="mb-1">
+                            <a href="#system-management" class="mobile-nav-link flex items-center px-4 py-3 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-700" data-target="system-management-section">
+                                <i class="fa fa-cog mr-3"></i>
+                                <span>系统管理</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <main class="flex-1 overflow-y-auto bg-neutral-100">
+            <!-- 顶部状态栏 -->
+            <header class="bg-white shadow-sm">
+                <div class="flex justify-between items-center px-4 py-3">
+                    <div class="flex items-center">
+                        <button id="sidebar-toggle" class="mr-4 text-neutral-500 hover:text-neutral-700 md:hidden">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <h2 class="text-lg font-medium text-neutral-800" id="page-title">数据概览</h2>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="relative mr-4">
+                            <button class="text-neutral-500 hover:text-neutral-700">
+                                <i class="fa fa-bell"></i>
+                                <span class="absolute top-0 right-0 w-2 h-2 bg-danger rounded-full"></span>
+                            </button>
+                        </div>
+                        <div class="relative">
+                            <button class="flex items-center text-neutral-700 hover:text-neutral-900">
+                                <span class="mr-2 text-sm">管理员</span>
+                                <i class="fa fa-angle-down"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 内容区域 -->
+            <div class="p-6">
+                <!-- 数据概览 -->
+                <section id="dashboard-section" class="section-content">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-white rounded-lg shadow-card p-6 card-hover">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-neutral-500">今日抓取数据</p>
+                                    <p class="text-2xl font-bold text-neutral-800 mt-1">1,284</p>
+                                    <p class="text-xs text-success flex items-center mt-1">
+                                        <i class="fa fa-arrow-up mr-1"></i>
+                                        <span>12.5% 较昨日</span>
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-primary">
+                                    <i class="fa fa-download fa-lg"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-card p-6 card-hover">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-neutral-500">待审核信息</p>
+                                    <p class="text-2xl font-bold text-neutral-800 mt-1">342</p>
+                                    <p class="text-xs text-danger flex items-center mt-1">
+                                        <i class="fa fa-arrow-up mr-1"></i>
+                                        <span>8.3% 较昨日</span>
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center text-warning">
+                                    <i class="fa fa-clock-o fa-lg"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-card p-6 card-hover">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-neutral-500">已通过审核</p>
+                                    <p class="text-2xl font-bold text-neutral-800 mt-1">867</p>
+                                    <p class="text-xs text-success flex items-center mt-1">
+                                        <i class="fa fa-arrow-up mr-1"></i>
+                                        <span>15.2% 较昨日</span>
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-success">
+                                    <i class="fa fa-check-circle fa-lg"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-card p-6 card-hover">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-neutral-500">AI智能评分</p>
+                                    <p class="text-2xl font-bold text-neutral-800 mt-1">94.2%</p>
+                                    <p class="text-xs text-success flex items-center mt-1">
+                                        <i class="fa fa-arrow-up mr-1"></i>
+                                        <span>准确率提升</span>
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white">
+                                    <i class="fa fa-brain fa-lg"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-white rounded-lg shadow-card p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-medium text-neutral-800">数据采集趋势</h3>
+                                <div class="flex space-x-2">
+                                    <button class="text-xs px-2 py-1 bg-primary text-white rounded">日</button>
+                                    <button class="text-xs px-2 py-1 bg-neutral-200 text-neutral-600 rounded">周</button>
+                                    <button class="text-xs px-2 py-1 bg-neutral-200 text-neutral-600 rounded">月</button>
+                                </div>
+                            </div>
+                            <div class="h-64">
+                                <canvas id="collection-trend-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-card p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-medium text-neutral-800">平台来源分布</h3>
+                                <div>
+                                    <button class="text-xs text-primary hover:text-primary-dark">
+                                        <i class="fa fa-refresh mr-1"></i>
+                                        <span>刷新</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="h-64">
+                                <canvas id="platform-distribution-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-card p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-medium text-neutral-800">最近审核记录</h3>
+                            <div>
+                                <a href="#information-management" class="text-xs text-primary hover:text-primary-dark">
+                                    <span>查看全部</span>
+                                    <i class="fa fa-angle-right ml-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-neutral-200">
+                                <thead>
+                                    <tr>
+                                        <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">品牌</th>
+                                        <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">折扣信息</th>
+                                        <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">来源</th>
+                                        <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">可信度</th>
+                                        <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">审核状态</th>
+                                        <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">审核时间</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-neutral-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">Apple</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-success font-medium">限时7折</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">小红书</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-neutral-900 mr-2">92%</span>
+                                                <div class="w-24 bg-neutral-200 rounded-full h-2">
+                                                    <div class="bg-success rounded-full h-2" style="width: 92%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">已通过</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">2023-07-21 14:32</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">Nike</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-success font-medium">满1000减300</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">公众号</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-neutral-900 mr-2">85%</span>
+                                                <div class="w-24 bg-neutral-200 rounded-full h-2">
+                                                    <div class="bg-success rounded-full h-2" style="width: 85%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">已通过</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">2023-07-21 13:45</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">Samsung</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-success font-medium">官方翻新机8折</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">小红书</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-neutral-900 mr-2">63%</span>
+                                                <div class="w-24 bg-neutral-200 rounded-full h-2">
+                                                    <div class="bg-warning rounded-full h-2" style="width: 63%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">待审核</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">2023-07-21 12:18</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">Xiaomi</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-success font-medium">新品首发9折</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">公众号</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-neutral-900 mr-2">45%</span>
+                                                <div class="w-24 bg-neutral-200 rounded-full h-2">
+                                                    <div class="bg-danger rounded-full h-2" style="width: 45%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">已忽略</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">2023-07-21 11:05</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 数据采集与处理 -->
+                <section id="data-collection-section" class="section-content hidden">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-neutral-800 mb-2">数据采集与处理</h2>
+                        <p class="text-neutral-600">实时监控和管理各平台数据采集状态</p>
+                    </div>
+
+                    <!-- 小红书专项数据管理 -->
+                    <div class="bg-white rounded-lg shadow-card p-6 mb-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center text-white mr-3">
+                                    <i class="fa fa-book"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-medium text-neutral-800">小红书数据采集</h3>
+                                    <p class="text-sm text-neutral-500">企业内购信息专项采集</p>
+                                </div>
+                            </div>
+                            <div class="flex space-x-3">
+                                <button onclick="frontendController.triggerXiaohongshuCollection()" 
+                                        class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+                                    <i class="fa fa-download mr-2"></i>
+                                    立即采集
+                                </button>
+                                <button class="px-4 py-2 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-colors">
+                                    <i class="fa fa-cog mr-2"></i>
+                                    配置
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 小红书数据统计 -->
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                            <div class="bg-neutral-50 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-neutral-500">总采集量</p>
+                                        <p class="text-2xl font-bold text-neutral-800" id="xhs-total">0</p>
+                                    </div>
+                                    <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                                        <i class="fa fa-database text-red-500"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-neutral-50 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-neutral-500">折扣信息</p>
+                                        <p class="text-2xl font-bold text-neutral-800" id="xhs-discount">0</p>
+                                    </div>
+                                    <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                                        <i class="fa fa-tag text-green-500"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-neutral-50 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-neutral-500">高可信度</p>
+                                        <p class="text-2xl font-bold text-neutral-800" id="xhs-credibility">0</p>
+                                    </div>
+                                    <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <i class="fa fa-shield text-blue-500"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-neutral-50 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-neutral-500">今日新增</p>
+                                        <p class="text-2xl font-bold text-neutral-800" id="xhs-recent">0</p>
+                                    </div>
+                                    <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                                        <i class="fa fa-clock-o text-purple-500"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 小红书图表 -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                            <div class="bg-neutral-50 rounded-lg p-4">
+                                <h4 class="text-md font-medium text-neutral-800 mb-4">采集趋势</h4>
+                                <div class="h-48">
+                                    <canvas id="xiaohongshu-trend-chart"></canvas>
+                                </div>
+                            </div>
+                            <div class="bg-neutral-50 rounded-lg p-4">
+                                <h4 class="text-md font-medium text-neutral-800 mb-4">品牌分布</h4>
+                                <div class="h-48">
+                                    <canvas id="xiaohongshu-brand-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 小红书数据列表 -->
+                        <div>
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-md font-medium text-neutral-800">最新采集数据</h4>
+                                <div class="flex space-x-2">
+                                    <select class="px-3 py-1 border border-neutral-300 rounded-lg text-sm">
+                                        <option>全部类型</option>
+                                        <option>折扣信息</option>
+                                        <option>内购信息</option>
+                                        <option>限时优惠</option>
+                                    </select>
+                                    <select class="px-3 py-1 border border-neutral-300 rounded-lg text-sm">
+                                        <option>可信度排序</option>
+                                        <option>时间排序</option>
+                                        <option>热度排序</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="xiaohongshu-list" class="max-h-96 overflow-y-auto">
+                                <!-- 数据项将通过JavaScript动态添加 -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 其他平台数据采集 -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-lg shadow-card p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-white mr-3">
+                                        <i class="fa fa-weibo"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-medium text-neutral-800">微博数据采集</h3>
+                                        <p class="text-sm text-neutral-500">暂未启用</p>
+                                    </div>
+                                </div>
+                                <button class="px-3 py-1 bg-neutral-100 text-neutral-600 rounded text-sm">
+                                    配置
+                                </button>
+                            </div>
+                            <div class="text-center py-8 text-neutral-500">
+                                <i class="fa fa-toggle-off text-4xl mb-3"></i>
+                                <p>微博数据采集功能暂未启用</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-card p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-white mr-3">
+                                        <i class="fa fa-music"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-medium text-neutral-800">抖音数据采集</h3>
+                                        <p class="text-sm text-neutral-500">暂未启用</p>
+                                    </div>
+                                </div>
+                                <button class="px-3 py-1 bg-neutral-100 text-neutral-600 rounded text-sm">
+                                    配置
+                                </button>
+                            </div>
+                            <div class="text-center py-8 text-neutral-500">
+                                <i class="fa fa-toggle-off text-4xl mb-3"></i>
+                                <p>抖音数据采集功能暂未启用</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-card p-6 mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-medium text-neutral-800">抓取任务配置</h3>
+                            <div>
+                                <button id="start-crawl-btn" class="px-4 py-2 bg-primary text-white rounded hover:bg-blue-600 transition-colors flex items-center">
+                                    <i class="fa fa-play mr-2"></i>
+                                    <span>开始抓取</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-neutral-700 mb-1">平台选择</label>
+                                <div class="flex space-x-4">
+                                    <label class="inline-flex items-center">
+                                        <input type="checkbox" class="form-checkbox text-primary" checked>
+                                        <span class="ml-2 text-sm text-neutral-700">小红书</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="checkbox" class="form-checkbox text-primary" checked>
+                                        <span class="ml-2 text-sm text-neutral-700">公众号</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-neutral-700 mb-1">抓取数量限制</label>
+                                <div class="flex items-center">
+                                    <input type="number" class="form-input rounded border-neutral-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 w-24" value="1000">
+                                    <span class="ml-2 text-sm text-neutral-500">条</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-neutral-700 mb-1">关键词设置</label>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm flex items-center">
+                                    企业内购
+                                    <button class="ml-1 text-blue-600 hover:text-blue-800">
+                                        <i class="fa fa-times-circle"></i>
+                                    </button>
+                                </span>
+                                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm flex items-center">
+                                    员工福利
+                                    <button class="ml-1 text-blue-600 hover:text-blue-800">
+                                        <i class="fa fa-times-circle"></i>
+                                    </button>
+                                </span>
+                                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm flex items-center">
+                                    内部折扣
+                                    <button class="ml-1 text-blue-600 hover:text-blue-800">
+                                        <i class="fa fa-times-circle"></i>
+                                    </button>
+                                </span>
+                                <div class="relative">
+                                    <input type="text" placeholder="添加关键词..." class="form-input rounded border-neutral-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 py-1 px-3 text-sm">
+                                    <button class="absolute right-2 top-1/2 transform -translate-y-1/2 text-primary">
+                                        <i class="fa fa-plus-circle"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-neutral-700 mb-1">抓取深度</label>
+                            <div class="flex items-center">
+                                <span class="text-sm text-neutral-500 mr-2">浅度</span>
+                                <input type="range" min="1" max="5" value="3" class="w-48">
+                                <span class="text-sm text-neutral-500 ml-2">深度</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-card p-6 mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-medium text-neutral-800">抓取状态监控</h3>
+                            <div>
+                                <span id="crawl-status" class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                                    <i class="fa fa-circle text-xs mr-1 animate-pulse"></i>
+                                    <span>正在运行</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div class="border border-neutral-200 rounded-lg p-4">
+                                <div class="flex justify-between items-center">
+                                    <p class="text-sm text-neutral-500">总进度</p>
+                                    <p class="text-sm font-medium text-neutral-800">68%</p>
+                                </div>
+                                <div class="mt-2 bg-neutral-200 rounded-full h-2">
+                                    <div class="bg-primary rounded-full h-2" style="width: 68%"></div>
+                                </div>
+                            </div>
+                            <div class="border border-neutral-200 rounded-lg p-4">
+                                <div class="flex justify-between items-center">
+                                    <p class="text-sm text-neutral-500">已抓取</p>
+                                    <p class="text-sm font-medium text-neutral-800">682/1000</p>
+                                </div>
+                                <div class="mt-2 bg-neutral-200 rounded-full h-2">
+                                    <div class="bg-success rounded-full h-2" style="width: 68%"></div>
+                                </div>
+                            </div>
+                            <div class="border border-neutral-200 rounded-lg p-4">
+                                <div class="flex justify-between items-center">
+                                    <p class="text-sm text-neutral-500">处理中</p>
+                                    <p class="text-sm font-medium text-neutral-800">42/1000</p>
+                                </div>
+                                <div class="mt-2 bg-neutral-200 rounded-full h-2">
+                                    <div class="bg-warning rounded-full h-2" style="width: 4%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="border border-neutral-200 rounded-lg p-4">
+                            <h4 class="text-sm font-medium text-neutral-700 mb-2">抓取日志</h4>
+                            <div class="h-48 overflow-y-auto bg-neutral-50 p-3 rounded text-xs text-neutral-600 font-mono">
+                                <p><span class="text-neutral-400">[14:30:21]</span> 开始小红书平台抓取任务</p>
+                                <p><span class="text-neutral-400">[14:30:25]</span> 已抓取小红书内容 100 条</p>
+                                <p><span class="text-neutral-400">[14:30:32]</span> 已抓取小红书内容 200 条</p>
+                                <p><span class="text-neutral-400">[14:30:40]</span> 开始公众号平台抓取任务</p>
+                                <p><span class="text-neutral-400">[14:30:45]</span> 已抓取公众号内容 100 条</p>
+                                <p><span class="text-neutral-400">[14:30:52]</span> 已抓取小红书内容 300 条</p>
+                                <p><span class="text-neutral-400">[14:31:01]</span> 已抓取公众号内容 200 条</p>
+                                <p><span class="text-neutral-400">[14:31:10]</span> 已抓取小红书内容 400 条</p>
+                                <p><span class="text-neutral-400">[14:31:18]</span> 已抓取公众号内容 300 条</p>
+                                <p><span class="text-neutral-400">[14:31:25]</span> 已抓取小红书内容 500 条</p>
+                                <p><span class="text-neutral-400">[14:31:32]</span> 已抓取公众号内容 400 条</p>
+                                <p><span class="text-neutral-400">[14:31:40]</span> 已抓取小红书内容 600 条</p>
+                                <p><span class="text-neutral-400">[14:31:48]</span> 已抓取公众号内容 482 条</p>
+                                <p><span class="text-neutral-400">[14:31:55]</span> 开始数据处理...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-card p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-medium text-neutral-800">关键词管理</h3>
+                            <div>
+                                <button class="px-3 py-1 bg-primary text-white rounded hover:bg-blue-600 transition-colors text-sm">
+                                    <i class="fa fa-plus mr-1"></i>
+                                    <span>添加关键词</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-neutral-200">
+                                <thead>
+                                    <tr>
+                                        <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">关键词</th>
+                                        <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">分类</th>
+                                        <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">权重</th>
+                                        <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">状态</th>
+                                        <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-neutral-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">企业内购</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">通用</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-neutral-900 mr-2">10</span>
+                                                <div class="w-24 bg-neutral-200 rounded-full h-2">
+                                                    <div class="bg-primary rounded-full h-2" style="width: 100%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">启用</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                            <button class="text-primary hover:text-blue-700 mr-3">编辑</button>
+                                            <button class="text-danger hover:text-red-700">删除</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">员工福利</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">通用</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-neutral-900 mr-2">8</span>
+                                                <div class="w-24 bg-neutral-200 rounded-full h-2">
+                                                    <div class="bg-primary rounded-full h-2" style="width: 80%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">启用</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                            <button class="text-primary hover:text-blue-700 mr-3">编辑</button>
+                                            <button class="text-danger hover:text-red-700">删除</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">内部折扣</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">通用</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-neutral-900 mr-2">9</span>
+                                                <div class="w-24 bg-neutral-200 rounded-full h-2">
+                                                    <div class="bg-primary rounded-full h-2" style="width: 90%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">启用</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                            <button class="text-primary hover:text-blue-700 mr-3">编辑</button>
+                                            <button class="text-danger hover:text-red-700">删除</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">限时特惠</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">促销</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-neutral-900 mr-2">7</span>
+                                                <div class="w-24 bg-neutral-200 rounded-full h-2">
+                                                    <div class="bg-primary rounded-full h-2" style="width: 70%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">启用</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                            <button class="text-primary hover:text-blue-700 mr-3">编辑</button>
+                                            <button class="text-danger hover:text-red-700">删除</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">清仓处理</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">促销</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-neutral-900 mr-2">5</span>
+                                                <div class="w-24 bg-neutral-200 rounded-full h-2">
+                                                    <div class="bg-primary rounded-full h-2" style="width: 50%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">禁用</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                            <button class="text-primary hover:text-blue-700 mr-3">编辑</button>
+                                            <button class="text-danger hover:text-red-700">删除</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="flex justify-between items-center mt-4">
+                            <p class="text-sm text-neutral-500">显示 1-5 条，共 24 条</p>
+                            <div class="flex space-x-1">
+                                <button class="px-3 py-1 border border-neutral-300 rounded text-sm text-neutral-500 hover:bg-neutral-50 disabled:opacity-50" disabled>
+                                    <i class="fa fa-angle-left"></i>
+                                </button>
+                                <button class="px-3 py-1 border border-primary bg-primary text-white rounded text-sm">1</button>
+                                <button class="px-3 py-1 border border-neutral-300 rounded text-sm text-neutral-700 hover:bg-neutral-50">2</button>
+                                <button class="px-3 py-1 border border-neutral-300 rounded text-sm text-neutral-700 hover:bg-neutral-50">3</button>
+                                <button class="px-3 py-1 border border-neutral-300 rounded text-sm text-neutral-700 hover:bg-neutral-50">4</button>
+                                <button class="px-3 py-1 border border-neutral-300 rounded text-sm text-neutral-700 hover:bg-neutral-50">5</button>
+                                <button class="px-3 py-1 border border-neutral-300 rounded text-sm text-neutral-700 hover:bg-neutral-50">
+                                    <i class="fa fa-angle-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 信息管理工作台 -->
+                <section id="information-management-section" class="section-content hidden">
+                    <div class="bg-white rounded-lg shadow-card p-6 mb-6">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                            <h3 class="text-lg font-medium text-neutral-800 mb-2 md:mb-0">信息管理工作台</h3>
+                            <div class="flex flex-col sm:flex-row gap-2">
+                                <div class="relative">
+                                    <input type="text" placeholder="搜索品牌、折扣信息..." class="form-input rounded border-neutral-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 pl-10">
+                                    <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400">
+                                        <i class="fa fa-search"></i>
+                                    </div>
+                                </div>
+                                <select class="form-select rounded border-neutral-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                                    <option value="">所有状态</option>
+                                    <option value="pending">待审核</option>
+                                    <option value="approved">已通过</option>
+                                    <option value="ignored">已忽略</option>
+                                </select>
+                                <select class="form-select rounded border-neutral-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                                    <option value="">所有平台</option>
+                                    <option value="xiaohongshu">小红书</option>
+                                    <option value="wechat">公众号</option>
+                                </select>
+                                <button class="px-3 py-2 bg-primary text-white rounded hover:bg-blue-600 transition-colors text-sm">
+                                    <i class="fa fa-filter mr-1"></i>
+                                    <span>筛选</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-neutral-200">
+                                <thead>
+                                    <tr>
+                                        <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                                            <input type="checkbox" class="form-checkbox text-primary">
+                                        </th>
+                                        <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">品牌</th>
+                                        <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">折扣信息</th>
+                                        <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">内容摘要</th>
+                                        <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">来源</th>
+                                        <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">可信度</th>
+                                        <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">状态</th>
+                                        <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-neutral-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <input type="checkbox" class="form-checkbox text-primary">
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">Apple</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-success font-medium">限时7折</td>
+                                        <td class="px-6 py-4 text-sm text-neutral-500 max-w-xs truncate">Apple官方企业内购活动，全场产品7折起，包括iPhone、MacBook、iPad等热门产品。活动时间有限，先到先得。</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">小红书</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-neutral-900 mr-2">92%</span>
+                                                <div class="w-24 bg-neutral-200 rounded-full h-2">
+                                                    <div class="bg-success rounded-full h-2" style="width: 92%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">已通过</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                            <button class="text-primary hover:text-blue-700 mr-3">查看</button>
+                                            <button class="text-neutral-500 hover:text-neutral-700 mr-3">编辑</button>
+                                            <button class="text-danger hover:text-red-700">删除</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <input type="checkbox" class="form-checkbox text-primary">
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">Nike</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-success font-medium">满1000减300</td>
+                                        <td class="px-6 py-4 text-sm text-neutral-500 max-w-xs truncate">Nike企业员工专享福利，购物满1000元立减300元，可叠加其他优惠。活动涵盖运动鞋、服装等全品类商品。</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">公众号</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-neutral-900 mr-2">85%</span>
+                                                <div class="w-24 bg-neutral-200 rounded-full h-2">
+                                                    <div class="bg-success rounded-full h-2" style="width: 85%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">已通过</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                            <button class="text-primary hover:text-blue-700 mr-3">查看</button>
+                                            <button class="text-neutral-500 hover:text-neutral-700 mr-3">编辑</button>
+                                            <button class="text-danger hover:text-red-700">删除</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <input type="checkbox" class="form-checkbox text-primary">
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">Samsung</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-success font-medium">官方翻新机8折</td>
+                                        <td class="px-6 py-4 text-sm text-neutral-500 max-w-xs truncate">Samsung官方翻新机企业内购活动，享受8折优惠，包含一年官方保修。限指定型号，数量有限。</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">小红书</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-neutral-900 mr-2">63%</span>
+                                                <div class="w-24 bg-neutral-200 rounded-full h-2">
+                                                    <div class="bg-warning rounded-full h-2" style="width: 63%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">待审核</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                            <button class="text-primary hover:text-blue-700 mr-3">查看</button>
+                                            <button class="text-success hover:text-green-700 mr-3">通过</button>
+                                            <button class="text-danger hover:text-red-700">忽略</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <input type="checkbox" class="form-checkbox text-primary">
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">Xiaomi</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-success font-medium">新品首发9折</td>
+                                        <td class="px-6 py-4 text-sm text-neutral-500 max-w-xs truncate">Xiaomi新品企业内购首发活动，享受9折优惠，包含最新款手机和智能家居产品。活动仅限企业员工参与。</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">公众号</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-neutral-900 mr-2">45%</span>
+                                                <div class="w-24 bg-neutral-200 rounded-full h-2">
+                                                    <div class="bg-danger rounded-full h-2" style="width: 45%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">待审核</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                            <button class="text-primary hover:text-blue-700 mr-3">查看</button>
+                                            <button class="text-success hover:text-green-700 mr-3">通过</button>
+                                            <button class="text-danger hover:text-red-700">忽略</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <input type="checkbox" class="form-checkbox text-primary">
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">Huawei</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-success font-medium">企业专享6折</td>
+                                        <td class="px-6 py-4 text-sm text-neutral-500 max-w-xs truncate">Huawei企业客户专享内购活动，全场产品6折起，包括手机、电脑、平板等全系列产品。需企业认证。</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">小红书</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-neutral-900 mr-2">78%</span>
+                                                <div class="w-24 bg-neutral-200 rounded-full h-2">
+                                                    <div class="bg-success rounded-full h-2" style="width: 78%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">待审核</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                            <button class="text-primary hover:text-blue-700 mr-3">查看</button>
+                                            <button class="text-success hover:text-green-700 mr-3">通过</button>
+                                            <button class="text-danger hover:text-red-700">忽略</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4">
+                            <div class="flex items-center mb-2 sm:mb-0">
+                                <input type="checkbox" class="form-checkbox text-primary mr-2">
+                                <span class="text-sm text-neutral-500">全选</span>
+                                <div class="ml-4 flex space-x-2">
+                                    <button class="px-2 py-1 bg-success text-white rounded hover:bg-green-600 transition-colors text-xs">
+                                        <i class="fa fa-check mr-1"></i>
+                                        <span>批量通过</span>
+                                    </button>
+                                    <button class="px-2 py-1 bg-danger text-white rounded hover:bg-red-600 transition-colors text-xs">
+                                        <i class="fa fa-times mr-1"></i>
+                                        <span>批量忽略</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <p class="text-sm text-neutral-500 mr-4">显示 1-5 条，共 342 条</p>
+                                <div class="flex space-x-1">
+                                    <button class="px-3 py-1 border border-neutral-300 rounded text-sm text-neutral-500 hover:bg-neutral-50 disabled:opacity-50" disabled>
+                                        <i class="fa fa-angle-left"></i>
+                                    </button>
+                                    <button class="px-3 py-1 border border-primary bg-primary text-white rounded text-sm">1</button>
+                                    <button class="px-3 py-1 border border-neutral-300 rounded text-sm text-neutral-700 hover:bg-neutral-50">2</button>
+                                    <button class="px-3 py-1 border border-neutral-300 rounded text-sm text-neutral-700 hover:bg-neutral-50">3</button>
+                                    <button class="px-3 py-1 border border-neutral-300 rounded text-sm text-neutral-700 hover:bg-neutral-50">...</button>
+                                    <button class="px-3 py-1 border border-neutral-300 rounded text-sm text-neutral-700 hover:bg-neutral-50">69</button>
+                                    <button class="px-3 py-1 border border-neutral-300 rounded text-sm text-neutral-700 hover:bg-neutral-50">
+                                        <i class="fa fa-angle-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 信息详情模态框 -->
+                    <div id="info-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+                        <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+                            <div class="p-6 border-b border-neutral-200 flex justify-between items-center">
+                                <h3 class="text-lg font-medium text-neutral-800">信息详情</h3>
+                                <button id="close-modal-btn" class="text-neutral-500 hover:text-neutral-700">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="p-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                    <div>
+                                        <p class="text-sm font-medium text-neutral-500">品牌</p>
+                                        <p class="text-lg font-bold text-neutral-800 mt-1">Samsung</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-neutral-500">折扣信息</p>
+                                        <p class="text-lg font-bold text-success mt-1">官方翻新机8折</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-neutral-500">来源平台</p>
+                                        <p class="text-neutral-800 mt-1">小红书</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-neutral-500">来源链接</p>
+                                        <a href="#" class="text-primary hover:text-blue-700 mt-1 inline-block">查看原文 <i class="fa fa-external-link ml-1"></i></a>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-neutral-500">可信度评分</p>
+                                        <div class="flex items-center mt-1">
+                                            <span class="text-neutral-800 mr-2">63%</span>
+                                            <div class="w-24 bg-neutral-200 rounded-full h-2">
+                                                <div class="bg-warning rounded-full h-2" style="width: 63%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-neutral-500">抓取时间</p>
+                                        <p class="text-neutral-800 mt-1">2023-07-21 10:15:32</p>
+                                    </div>
+                                </div>
+                                <div class="mb-6">
+                                    <p class="text-sm font-medium text-neutral-500">内容摘要</p>
+                                    <p class="text-neutral-800 mt-1">Samsung官方翻新机企业内购活动，享受8折优惠，包含一年官方保修。限指定型号，数量有限。活动时间：2023-07-20至2023-07-30。参与方式：企业员工凭工牌或企业邮箱认证参与。</p>
+                                </div>
+                                <div class="mb-6">
+                                    <p class="text-sm font-medium text-neutral-500">关键词标签</p>
+                                    <div class="flex flex-wrap gap-2 mt-1">
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">企业内购</span>
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">三星</span>
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">翻新机</span>
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">8折</span>
+                                    </div>
+                                </div>
+                                <div class="border-t border-neutral-200 pt-6 flex justify-end space-x-3">
+                                    <button class="px-4 py-2 border border-neutral-300 rounded text-neutral-700 hover:bg-neutral-50">
+                                        取消
+                                    </button>
+                                    <button class="px-4 py-2 bg-danger text-white rounded hover:bg-red-600">
+                                        忽略
+                                    </button>
+                                    <button class="px-4 py-2 bg-success text-white rounded hover:bg-green-600">
+                                        通过
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 内容生产与发布 -->
+                <section id="content-production-section" class="section-content hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2">
+                            <div class="bg-white rounded-lg shadow-card p-6 mb-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-lg font-medium text-neutral-800">内容编辑</h3>
+                                    <div class="flex space-x-2">
+                                        <button class="px-3 py-1 border border-neutral-300 rounded text-sm text-neutral-700 hover:bg-neutral-50">
+                                            <i class="fa fa-eye mr-1"></i>
+                                            <span>预览</span>
+                                        </button>
+                                        <button class="px-3 py-1 bg-primary text-white rounded hover:bg-blue-600 transition-colors text-sm">
+                                            <i class="fa fa-paper-plane mr-1"></i>
+                                            <span>推送草稿</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-neutral-700 mb-1">标题</label>
+                                    <input type="text" class="form-input rounded border-neutral-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 w-full" value="【企业内购】Samsung官方翻新机8折优惠，一年保修">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-neutral-700 mb-1">选择模板</label>
+                                    <select class="form-select rounded border-neutral-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 w-full">
+                                        <option value="template1" selected>通用内购模板</option>
+                                        <option value="template2">电子产品模板</option>
+                                        <option value="template3">服装鞋帽模板</option>
+                                        <option value="template4">食品饮料模板</option>
+                                    </select>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-neutral-700 mb-1">内容编辑</label>
+                                    <div class="border border-neutral-300 rounded-lg overflow-hidden">
+                                        <div class="bg-neutral-50 border-b border-neutral-300 p-2 flex flex-wrap gap-2">
+                                            <button class="p-1 text-neutral-700 hover:bg-neutral-200 rounded">
+                                                <i class="fa fa-bold"></i>
+                                            </button>
+                                            <button class="p-1 text-neutral-700 hover:bg-neutral-200 rounded">
+                                                <i class="fa fa-italic"></i>
+                                            </button>
+                                            <button class="p-1 text-neutral-700 hover:bg-neutral-200 rounded">
+                                                <i class="fa fa-underline"></i>
+                                            </button>
+                                            <span class="h-4 border-r border-neutral-300 mx-1"></span>
+                                            <button class="p-1 text-neutral-700 hover:bg-neutral-200 rounded">
+                                                <i class="fa fa-list-ul"></i>
+                                            </button>
+                                            <button class="p-1 text-neutral-700 hover:bg-neutral-200 rounded">
+                                                <i class="fa fa-list-ol"></i>
+                                            </button>
+                                            <span class="h-4 border-r border-neutral-300 mx-1"></span>
+                                            <button class="p-1 text-neutral-700 hover:bg-neutral-200 rounded">
+                                                <i class="fa fa-link"></i>
+                                            </button>
+                                            <button class="p-1 text-neutral-700 hover:bg-neutral-200 rounded">
+                                                <i class="fa fa-image"></i>
+                                            </button>
+                                            <button class="p-1 text-neutral-700 hover:bg-neutral-200 rounded">
+                                                <i class="fa fa-table"></i>
+                                            </button>
+                                        </div>
+                                        <div class="p-4 min-h-[300px] bg-white" contenteditable="true">
+                                            <p><strong>【企业内购】Samsung官方翻新机8折优惠，一年保修</strong></p>
+                                            <p>&nbsp;</p>
+                                            <p>各位企业用户注意啦！Samsung官方翻新机企业内购活动来袭，全场8折优惠，还包含一年官方保修服务！</p>
+                                            <p>&nbsp;</p>
+                                            <p><strong>活动详情：</strong></p>
+                                            <ul>
+                                                <li>活动时间：2023-07-20至2023-07-30</li>
+                                                <li>折扣力度：官方翻新机8折优惠</li>
+                                                <li>保修服务：包含一年官方保修</li>
+                                                <li>参与方式：企业员工凭工牌或企业邮箱认证参与</li>
+                                            </ul>
+                                            <p>&nbsp;</p>
+                                            <p><strong>活动亮点：</strong></p>
+                                            <p>本次活动涵盖Samsung多款热门机型，包括Galaxy S22系列、Galaxy Z Fold3、Galaxy Tab S8等。所有翻新机均经过严格检测和修复，确保品质与新机无异，同时享受大幅折扣优惠。</p>
+                                            <p>&nbsp;</p>
+                                            <p><strong>参与方式：</strong></p>
+                                            <p>1. 访问Samsung企业内购专区</p>
+                                            <p>2. 使用企业邮箱或工牌信息进行认证</p>
+                                            <p>3. 选择心仪产品，享受8折优惠</p>
+                                            <p>&nbsp;</p>
+                                            <p>机会难得，数量有限，先到先得！赶紧行动起来，为您的企业添置高品质的Samsung设备吧！</p>
+                                            <p>&nbsp;</p>
+                                            <p><em>注：本信息来源于网络，具体活动规则请以Samsung官方说明为准。</em></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-neutral-700 mb-1">封面图片</label>
+                                    <div class="border-2 border-dashed border-neutral-300 rounded-lg p-6 text-center">
+                                        <i class="fa fa-cloud-upload text-neutral-400 text-3xl mb-2"></i>
+                                        <p class="text-sm text-neutral-500 mb-1">点击或拖拽图片到此处上传</p>
+                                        <p class="text-xs text-neutral-400">支持 JPG、PNG 格式，最大 5MB</p>
+                                        <button class="mt-3 px-4 py-1 bg-neutral-200 text-neutral-700 rounded text-sm hover:bg-neutral-300">
+                                            选择图片
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="flex justify-end space-x-3">
+                                    <button class="px-4 py-2 border border-neutral-300 rounded text-neutral-700 hover:bg-neutral-50">
+                                        保存草稿
+                                    </button>
+                                    <button class="px-4 py-2 bg-primary text-white rounded hover:bg-blue-600">
+                                        推送至公众号草稿箱
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-white rounded-lg shadow-card p-6 mb-6">
+                                <h3 class="text-lg font-medium text-neutral-800 mb-4">模板管理</h3>
+                                <div class="space-y-3">
+                                    <div class="border border-primary rounded-lg p-3 bg-blue-50 flex justify-between items-center">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 rounded bg-primary flex items-center justify-center text-white">
+                                                <i class="fa fa-file-text-o"></i>
+                                            </div>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-neutral-800">通用内购模板</p>
+                                                <p class="text-xs text-neutral-500">适用于各类企业内购信息</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <span class="px-2 py-1 bg-primary text-white rounded text-xs mr-2">默认</span>
+                                            <div class="dropdown relative">
+                                                <button class="text-neutral-500 hover:text-neutral-700">
+                                                    <i class="fa fa-ellipsis-v"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="border border-neutral-200 rounded-lg p-3 hover:border-primary hover:bg-blue-50 transition-colors flex justify-between items-center">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 rounded bg-neutral-200 flex items-center justify-center text-neutral-500">
+                                                <i class="fa fa-mobile"></i>
+                                            </div>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-neutral-800">电子产品模板</p>
+                                                <p class="text-xs text-neutral-500">适用于手机、电脑等电子产品</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <div class="dropdown relative">
+                                                <button class="text-neutral-500 hover:text-neutral-700">
+                                                    <i class="fa fa-ellipsis-v"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="border border-neutral-200 rounded-lg p-3 hover:border-primary hover:bg-blue-50 transition-colors flex justify-between items-center">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 rounded bg-neutral-200 flex items-center justify-center text-neutral-500">
+                                                <i class="fa fa-shopping-bag"></i>
+                                            </div>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-neutral-800">服装鞋帽模板</p>
+                                                <p class="text-xs text-neutral-500">适用于服装、鞋帽等时尚产品</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <div class="dropdown relative">
+                                                <button class="text-neutral-500 hover:text-neutral-700">
+                                                    <i class="fa fa-ellipsis-v"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="border border-neutral-200 rounded-lg p-3 hover:border-primary hover:bg-blue-50 transition-colors flex justify-between items-center">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 rounded bg-neutral-200 flex items-center justify-center text-neutral-500">
+                                                <i class="fa fa-cutlery"></i>
+                                            </div>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-neutral-800">食品饮料模板</p>
+                                                <p class="text-xs text-neutral-500">适用于食品、饮料等快消产品</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <div class="dropdown relative">
+                                                <button class="text-neutral-500 hover:text-neutral-700">
+                                                    <i class="fa fa-ellipsis-v"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="mt-4 w-full px-4 py-2 border border-dashed border-neutral-300 rounded text-neutral-500 hover:border-primary hover:text-primary transition-colors text-sm">
+                                    <i class="fa fa-plus mr-1"></i>
+                                    <span>创建新模板</span>
+                                </button>
+                            </div>
+                            <div class="bg-white rounded-lg shadow-card p-6">
+                                <h3 class="text-lg font-medium text-neutral-800 mb-4">发布记录</h3>
+                                <div class="space-y-4">
+                                    <div class="border-l-4 border-success pl-3 py-1">
+                                        <p class="text-sm font-medium text-neutral-800">【企业内购】Apple限时7折优惠</p>
+                                        <p class="text-xs text-neutral-500 mt-1">推送时间：2023-07-21 14:32</p>
+                                        <p class="text-xs text-success mt-1">状态：已推送至公众号草稿箱</p>
+                                    </div>
+                                    <div class="border-l-4 border-success pl-3 py-1">
+                                        <p class="text-sm font-medium text-neutral-800">【企业内购】Nike满1000减300活动</p>
+                                        <p class="text-xs text-neutral-500 mt-1">推送时间：2023-07-21 11:15</p>
+                                        <p class="text-xs text-success mt-1">状态：已推送至公众号草稿箱</p>
+                                    </div>
+                                    <div class="border-l-4 border-neutral-300 pl-3 py-1">
+                                        <p class="text-sm font-medium text-neutral-800">【企业内购】Huawei MateBook 9折特惠</p>
+                                        <p class="text-xs text-neutral-500 mt-1">推送时间：2023-07-20 16:48</p>
+                                        <p class="text-xs text-neutral-500 mt-1">状态：已保存为草稿</p>
+                                    </div>
+                                </div>
+                                <a href="#" class="mt-4 block text-center text-sm text-primary hover:text-blue-700">
+                                    查看全部记录
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- AI智能分析 -->
+                <section id="ai-analysis-section" class="section-content hidden">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-bold text-neutral-800">AI智能分析</h2>
+                        <p class="text-neutral-600">基于人工智能的数据分析和智能推荐</p>
+                    </div>
+                    
+                    <!-- AI分析概览 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-4 text-white">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-blue-100 text-sm">智能识别准确率</p>
+                                    <p class="text-2xl font-bold mt-1">96.8%</p>
+                                </div>
+                                <i class="fa fa-eye text-3xl text-blue-200"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-4 text-white">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-green-100 text-sm">内容质量评分</p>
+                                    <p class="text-2xl font-bold mt-1">4.7/5.0</p>
+                                </div>
+                                <i class="fa fa-star text-3xl text-green-200"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-4 text-white">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-purple-100 text-sm">推荐命中率</p>
+                                    <p class="text-2xl font-bold mt-1">89.3%</p>
+                                </div>
+                                <i class="fa fa-lightbulb text-3xl text-purple-200"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-4 text-white">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-orange-100 text-sm">风险识别率</p>
+                                    <p class="text-2xl font-bold mt-1">92.1%</p>
+                                </div>
+                                <i class="fa fa-shield-alt text-3xl text-orange-200"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- AI智能推荐 -->
+                        <div class="bg-white rounded-lg shadow-card p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-neutral-800">AI智能推荐</h3>
+                                <button class="text-primary text-sm hover:underline">刷新推荐</button>
+                            </div>
+                            
+                            <div class="space-y-3">
+                                <div class="border border-neutral-200 rounded-lg p-4 hover:border-primary transition-colors">
+                                    <div class="flex items-start justify-between">
+                                        <div class="flex-1">
+                                            <div class="flex items-center mb-2">
+                                                <span class="bg-primary text-white text-xs px-2 py-1 rounded-full mr-2">高推荐</span>
+                                                <span class="text-sm text-neutral-500">匹配度: 95%</span>
+                                            </div>
+                                            <h4 class="font-medium text-neutral-800 mb-1">Apple MacBook Pro 14寸</h4>
+                                            <p class="text-sm text-neutral-600 mb-2">企业专享价，限时8.5折</p>
+                                            <div class="flex items-center text-sm text-neutral-500">
+                                                <i class="fa fa-store mr-1"></i>
+                                                <span>苹果企业商店</span>
+                                                <span class="mx-2">•</span>
+                                                <i class="fa fa-clock mr-1"></i>
+                                                <span>2小时前</span>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4 text-center">
+                                            <div class="text-2xl font-bold text-success">4.8</div>
+                                            <div class="text-xs text-neutral-500">AI评分</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-neutral-200 rounded-lg p-4 hover:border-primary transition-colors">
+                                    <div class="flex items-start justify-between">
+                                        <div class="flex-1">
+                                            <div class="flex items-center mb-2">
+                                                <span class="bg-success text-white text-xs px-2 py-1 rounded-full mr-2">推荐</span>
+                                                <span class="text-sm text-neutral-500">匹配度: 87%</span>
+                                            </div>
+                                            <h4 class="font-medium text-neutral-800 mb-1">Microsoft Surface Pro 9</h4>
+                                            <p class="text-sm text-neutral-600 mb-2">批量采购优惠，低至7折</p>
+                                            <div class="flex items-center text-sm text-neutral-500">
+                                                <i class="fa fa-store mr-1"></i>
+                                                <span>微软官方商城</span>
+                                                <span class="mx-2">•</span>
+                                                <i class="fa fa-clock mr-1"></i>
+                                                <span>3小时前</span>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4 text-center">
+                                            <div class="text-2xl font-bold text-success">4.5</div>
+                                            <div class="text-xs text-neutral-500">AI评分</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 智能分析报告 -->
+                        <div class="bg-white rounded-lg shadow-card p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-neutral-800">智能分析报告</h3>
+                                <button class="text-primary text-sm hover:underline">生成报告</button>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div class="bg-neutral-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-neutral-800 mb-2">今日市场趋势</h4>
+                                    <p class="text-sm text-neutral-600 mb-3">AI分析显示，电子产品类内购信息热度上升23%，建议重点关注以下品牌：</p>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="bg-white px-3 py-1 rounded-full text-sm border border-neutral-200">Apple (+15%)</span>
+                                        <span class="bg-white px-3 py-1 rounded-full text-sm border border-neutral-200">Microsoft (+12%)</span>
+                                        <span class="bg-white px-3 py-1 rounded-full text-sm border border-neutral-200">Dell (+8%)</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-neutral-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-neutral-800 mb-2">风险预警</h4>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center text-sm">
+                                            <i class="fa fa-exclamation-triangle text-warning mr-2"></i>
+                                            <span class="text-neutral-700">发现3条疑似虚假折扣信息</span>
+                                        </div>
+                                        <div class="flex items-center text-sm">
+                                            <i class="fa fa-info-circle text-info mr-2"></i>
+                                            <span class="text-neutral-700">5条信息需要人工复核</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-neutral-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-neutral-800 mb-2">优化建议</h4>
+                                    <ul class="text-sm text-neutral-600 space-y-1">
+                                        <li>• 建议增加汽车用品类目监测</li>
+                                        <li>• 优化关键词过滤规则，减少误判</li>
+                                        <li>• 扩展数据源至更多电商平台</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- AI模型配置 -->
+                    <div class="bg-white rounded-lg shadow-card p-6 mt-6">
+                        <h3 class="text-lg font-semibold text-neutral-800 mb-4">AI模型配置</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="border border-neutral-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-medium text-neutral-800">内容识别模型</span>
+                                    <span class="bg-success text-white text-xs px-2 py-1 rounded-full">运行中</span>
+                                </div>
+                                <p class="text-sm text-neutral-600 mb-2">版本: v2.3.1</p>
+                                <div class="w-full bg-neutral-200 rounded-full h-2">
+                                    <div class="bg-success rounded-full h-2" style="width: 96%"></div>
+                                </div>
+                                <p class="text-xs text-neutral-500 mt-1">准确率: 96%</p>
+                            </div>
+                            
+                            <div class="border border-neutral-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-medium text-neutral-800">推荐算法</span>
+                                    <span class="bg-success text-white text-xs px-2 py-1 rounded-full">运行中</span>
+                                </div>
+                                <p class="text-sm text-neutral-600 mb-2">版本: v1.8.5</p>
+                                <div class="w-full bg-neutral-200 rounded-full h-2">
+                                    <div class="bg-primary rounded-full h-2" style="width: 89%"></div>
+                                </div>
+                                <p class="text-xs text-neutral-500 mt-1">命中率: 89%</p>
+                            </div>
+                            
+                            <div class="border border-neutral-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-medium text-neutral-800">风险检测模型</span>
+                                    <span class="bg-warning text-white text-xs px-2 py-1 rounded-full">更新中</span>
+                                </div>
+                                <p class="text-sm text-neutral-600 mb-2">版本: v3.0.0</p>
+                                <div class="w-full bg-neutral-200 rounded-full h-2">
+                                    <div class="bg-warning rounded-full h-2" style="width: 92%"></div>
+                                </div>
+                                <p class="text-xs text-neutral-500 mt-1">识别率: 92%</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 系统管理 -->
+                <section id="system-management-section" class="section-content hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2">
+                            <div class="bg-white rounded-lg shadow-card p-6 mb-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-lg font-medium text-neutral-800">系统设置</h3>
+                                    <button class="px-3 py-1 bg-primary text-white rounded hover:bg-blue-600 transition-colors text-sm">
+                                        保存设置
+                                    </button>
+                                </div>
+                                <div class="space-y-6">
+                                    <div>
+                                        <h4 class="text-md font-medium text-neutral-700 mb-3">抓取设置</h4>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-neutral-700 mb-1">默认抓取数量</label>
+                                                <input type="number" class="form-input rounded border-neutral-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 w-full" value="1000">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-neutral-700 mb-1">抓取频率</label>
+                                                <select class="form-select rounded border-neutral-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 w-full">
+                                                    <option value="hourly">每小时</option>
+                                                    <option value="daily" selected>每天</option>
+                                                    <option value="twice">每天两次</option>
+                                                    <option value="weekly">每周</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-neutral-700 mb-1">抓取深度</label>
+                                                <select class="form-select rounded border-neutral-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 w-full">
+                                                    <option value="shallow">浅度</option>
+                                                    <option value="medium" selected>中度</option>
+                                                    <option value="deep">深度</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-neutral-700 mb-1">自动去重</label>
+                                                <label class="inline-flex items-center">
+                                                    <input type="checkbox" class="form-checkbox text-primary" checked>
+                                                    <span class="ml-2 text-sm text-neutral-700">启用自动去重功能</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="border-t border-neutral-200 pt-6">
+                                        <h4 class="text-md font-medium text-neutral-700 mb-3">公众号设置</h4>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-neutral-700 mb-1">公众号AppID</label>
+                                                <input type="text" class="form-input rounded border-neutral-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 w-full" value="wx1234567890abcdef">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-neutral-700 mb-1">公众号AppSecret</label>
+                                                <input type="password" class="form-input rounded border-neutral-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 w-full" value="****************">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-neutral-700 mb-1">自动添加版权声明</label>
+                                                <label class="inline-flex items-center">
+                                                    <input type="checkbox" class="form-checkbox text-primary" checked>
+                                                    <span class="ml-2 text-sm text-neutral-700">在文末自动添加版权声明</span>
+                                                </label>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-neutral-700 mb-1">自动添加原文链接</label>
+                                                <label class="inline-flex items-center">
+                                                    <input type="checkbox" class="form-checkbox text-primary" checked>
+                                                    <span class="ml-2 text-sm text-neutral-700">在文末自动添加原文链接</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="border-t border-neutral-200 pt-6">
+                                        <h4 class="text-md font-medium text-neutral-700 mb-3">通知设置</h4>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-neutral-700 mb-1">新数据通知</label>
+                                                <label class="inline-flex items-center">
+                                                    <input type="checkbox" class="form-checkbox text-primary" checked>
+                                                    <span class="ml-2 text-sm text-neutral-700">有新数据时发送通知</span>
+                                                </label>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-neutral-700 mb-1">审核提醒</label>
+                                                <label class="inline-flex items-center">
+                                                    <input type="checkbox" class="form-checkbox text-primary" checked>
+                                                    <span class="ml-2 text-sm text-neutral-700">待审核数据超过阈值时提醒</span>
+                                                </label>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-neutral-700 mb-1">阈值设置</label>
+                                                <input type="number" class="form-input rounded border-neutral-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 w-full" value="50">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-neutral-700 mb-1">通知方式</label>
+                                                <div class="flex space-x-4">
+                                                    <label class="inline-flex items-center">
+                                                        <input type="checkbox" class="form-checkbox text-primary" checked>
+                                                        <span class="ml-2 text-sm text-neutral-700">系统内</span>
+                                                    </label>
+                                                    <label class="inline-flex items-center">
+                                                        <input type="checkbox" class="form-checkbox text-primary">
+                                                        <span class="ml-2 text-sm text-neutral-700">邮件</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white rounded-lg shadow-card p-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-lg font-medium text-neutral-800">用户管理</h3>
+                                    <button class="px-3 py-1 bg-primary text-white rounded hover:bg-blue-600 transition-colors text-sm">
+                                        <i class="fa fa-plus mr-1"></i>
+                                        <span>添加用户</span>
+                                    </button>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-neutral-200">
+                                        <thead>
+                                            <tr>
+                                                <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">用户名</th>
+                                                <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">邮箱</th>
+                                                <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">角色</th>
+                                                <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">状态</th>
+                                                <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">最后登录</th>
+                                                <th class="px-6 py-3 bg-neutral-50 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-neutral-200">
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">admin</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">admin@example.com</td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">管理员</span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">活跃</span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">2023-07-21 09:15</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                                    <button class="text-primary hover:text-blue-700 mr-3">编辑</button>
+                                                    <button class="text-neutral-500 hover:text-neutral-700">重置密码</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">editor</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">editor@example.com</td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">编辑</span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">活跃</span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">2023-07-20 16:42</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                                    <button class="text-primary hover:text-blue-700 mr-3">编辑</button>
+                                                    <button class="text-neutral-500 hover:text-neutral-700">重置密码</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900">reviewer</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">reviewer@example.com</td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">审核员</span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">禁用</span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">2023-07-15 11:28</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                                                    <button class="text-primary hover:text-blue-700 mr-3">编辑</button>
+                                                    <button class="text-neutral-500 hover:text-neutral-700">重置密码</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-white rounded-lg shadow-card p-6 mb-6">
+                                <h3 class="text-lg font-medium text-neutral-800 mb-4">数据统计</h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="flex justify-between items-center mb-1">
+                                            <p class="text-sm text-neutral-500">数据采集总量</p>
+                                            <p class="text-sm font-medium text-neutral-800">24,583</p>
+                                        </div>
+                                        <div class="bg-neutral-200 rounded-full h-2">
+                                            <div class="bg-primary rounded-full h-2" style="width: 75%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between items-center mb-1">
+                                            <p class="text-sm text-neutral-500">审核通过率</p>
+                                            <p class="text-sm font-medium text-neutral-800">78.3%</p>
+                                        </div>
+                                        <div class="bg-neutral-200 rounded-full h-2">
+                                            <div class="bg-success rounded-full h-2" style="width: 78%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between items-center mb-1">
+                                            <p class="text-sm text-neutral-500">内容发布量</p>
+                                            <p class="text-sm font-medium text-neutral-800">1,246</p>
+                                        </div>
+                                        <div class="bg-neutral-200 rounded-full h-2">
+                                            <div class="bg-warning rounded-full h-2" style="width: 45%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between items-center mb-1">
+                                            <p class="text-sm text-neutral-500">公众号素材库</p>
+                                            <p class="text-sm font-medium text-neutral-800">92%</p>
+                                        </div>
+                                        <div class="bg-neutral-200 rounded-full h-2">
+                                            <div class="bg-danger rounded-full h-2" style="width: 92%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-6">
+                                    <h4 class="text-sm font-medium text-neutral-700 mb-3">月度数据趋势</h4>
+                                    <div class="h-48">
+                                        <canvas id="monthly-trend-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white rounded-lg shadow-card p-6">
+                                <h3 class="text-lg font-medium text-neutral-800 mb-4">系统日志</h3>
+                                <div class="space-y-3">
+                                    <div class="flex items-start">
+                                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-primary flex-shrink-0">
+                                            <i class="fa fa-cog"></i>
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm text-neutral-800">系统设置更新</p>
+                                            <p class="text-xs text-neutral-500">管理员更新了抓取设置</p>
+                                            <p class="text-xs text-neutral-400 mt-1">2023-07-21 15:42:36</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start">
+                                        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-success flex-shrink-0">
+                                            <i class="fa fa-check-circle"></i>
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm text-neutral-800">抓取任务完成</p>
+                                            <p class="text-xs text-neutral-500">成功抓取1000条数据</p>
+                                            <p class="text-xs text-neutral-400 mt-1">2023-07-21 14:30:15</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start">
+                                        <div class="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center text-warning flex-shrink-0">
+                                            <i class="fa fa-user"></i>
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm text-neutral-800">用户登录</p>
+                                            <p class="text-xs text-neutral-500">editor用户登录系统</p>
+                                            <p class="text-xs text-neutral-400 mt-1">2023-07-21 09:15:22</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start">
+                                        <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-danger flex-shrink-0">
+                                            <i class="fa fa-exclamation-triangle"></i>
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm text-neutral-800">公众号API错误</p>
+                                            <p class="text-xs text-neutral-500">推送草稿时发生API错误</p>
+                                            <p class="text-xs text-neutral-400 mt-1">2023-07-20 16:48:05</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="#" class="mt-4 block text-center text-sm text-primary hover:text-blue-700">
+                                    查看完整日志
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 导航切换
+            const navLinks = document.querySelectorAll('.nav-link, .mobile-nav-link');
+            const sections = document.querySelectorAll('.section-content');
+            const pageTitle = document.getElementById('page-title');
+            const mobileNav = document.getElementById('mobile-nav');
+            const mobileNavContent = document.getElementById('mobile-nav-content');
+            const mobileNavToggle = document.getElementById('mobile-nav-toggle');
+            const mobileNavClose = document.getElementById('mobile-nav-close');
+            const infoDetailModal = document.getElementById('info-detail-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const startCrawlBtn = document.getElementById('start-crawl-btn');
+            const crawlStatus = document.getElementById('crawl-status');
+
+            // 导航切换
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('data-target');
+                    
+                    // 更新导航样式
+                    navLinks.forEach(navLink => {
+                        navLink.classList.remove('bg-neutral-100', 'text-neutral-700', 'border-l-4', 'border-primary');
+                        navLink.classList.add('text-neutral-600', 'hover:bg-neutral-100', 'hover:text-neutral-700');
+                    });
+                    this.classList.remove('text-neutral-600', 'hover:bg-neutral-100', 'hover:text-neutral-700');
+                    this.classList.add('bg-neutral-100', 'text-neutral-700', 'border-l-4', 'border-primary');
+                    
+                    // 显示对应内容
+                    sections.forEach(section => {
+                        section.classList.add('hidden');
+                    });
+                    document.getElementById(targetId).classList.remove('hidden');
+                    
+                    // 更新页面标题
+                    pageTitle.textContent = this.querySelector('span').textContent;
+                    
+                    // 关闭移动端导航
+                    mobileNav.classList.add('hidden');
+                    mobileNavContent.classList.add('-translate-x-full');
+                });
+            });
+
+            // 移动端导航切换
+            mobileNavToggle.addEventListener('click', function() {
+                mobileNav.classList.remove('hidden');
+                setTimeout(() => {
+                    mobileNavContent.classList.remove('-translate-x-full');
+                }, 10);
+            });
+
+            mobileNavClose.addEventListener('click', function() {
+                mobileNavContent.classList.add('-translate-x-full');
+                setTimeout(() => {
+                    mobileNav.classList.add('hidden');
+                }, 300);
+            });
+
+            mobileNav.addEventListener('click', function(e) {
+                if (e.target === mobileNav) {
+                    mobileNavContent.classList.add('-translate-x-full');
+                    setTimeout(() => {
+                        mobileNav.classList.add('hidden');
+                    }, 300);
+                }
+            });
+
+            // 信息详情模态框
+            document.querySelectorAll('.text-primary.hover\\:text-blue-700, .text-primary.hover:text-blue-700').forEach(btn => {
+                if (btn.textContent.trim() === '查看') {
+                    btn.addEventListener('click', function() {
+                        infoDetailModal.classList.remove('hidden');
+                    });
+                }
+            });
+
+            closeModalBtn.addEventListener('click', function() {
+                infoDetailModal.classList.add('hidden');
+            });
+
+            // 抓取按钮点击事件
+            startCrawlBtn.addEventListener('click', function() {
+                if (this.querySelector('i').classList.contains('fa-play')) {
+                    this.querySelector('i').classList.remove('fa-play');
+                    this.querySelector('i').classList.add('fa-pause');
+                    this.querySelector('span').textContent = '暂停抓取';
+                    crawlStatus.querySelector('span').textContent = '正在运行';
+                    crawlStatus.classList.remove('bg-red-100', 'text-red-800');
+                    crawlStatus.classList.add('bg-green-100', 'text-green-800');
+                } else {
+                    this.querySelector('i').classList.remove('fa-pause');
+                    this.querySelector('i').classList.add('fa-play');
+                    this.querySelector('span').textContent = '继续抓取';
+                    crawlStatus.querySelector('span').textContent = '已暂停';
+                    crawlStatus.classList.remove('bg-green-100', 'text-green-800');
+                    crawlStatus.classList.add('bg-red-100', 'text-red-800');
+                }
+            });
+
+            // 初始化图表
+            initCharts();
+        });
+
+        // 初始化图表
+        function initCharts() {
+            // 数据采集趋势图表
+            const collectionTrendCtx = document.getElementById('collection-trend-chart').getContext('2d');
+            new Chart(collectionTrendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00'],
+                    datasets: [
+                        {
+                            label: '小红书',
+                            data: [120, 190, 300, 500, 450, 600, 700, 682],
+                            borderColor: '#3B82F6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: '公众号',
+                            data: [80, 150, 250, 300, 400, 450, 500, 482],
+                            borderColor: '#10B981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // 平台来源分布图表
+            const platformDistributionCtx = document.getElementById('platform-distribution-chart').getContext('2d');
+            new Chart(platformDistributionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['小红书', '公众号', '其他'],
+                    datasets: [{
+                        data: [65, 25, 10],
+                        backgroundColor: [
+                            '#3B82F6',
+                            '#10B981',
+                            '#9CA3AF'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+
+            // 月度趋势图表
+            const monthlyTrendCtx = document.getElementById('monthly-trend-chart').getContext('2d');
+            new Chart(monthlyTrendCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月'],
+                    datasets: [
+                        {
+                            label: '采集数据',
+                            data: [1200, 1900, 3000, 5000, 4500, 6000, 7500],
+                            backgroundColor: '#3B82F6'
+                        },
+                        {
+                            label: '发布内容',
+                            data: [120, 190, 300, 500, 450, 600, 750],
+                            backgroundColor: '#10B981'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+
+    <!-- 三层架构JavaScript文件 - 延迟加载优化 -->
+    <script src="config.js" defer></script>
+    <script src="backend-service.js" defer></script>
+    <script src="middleware-api.js" defer></script>
+    <script src="frontend-controller.js" defer></script>
+    
+    <!-- 系统初始化脚本 -->
+    <script>
+        // 性能监控
+        const performanceMetrics = {
+            startTime: performance.now(),
+            mark: (name) => performance.mark && performance.mark(name),
+            measure: (name, startMark, endMark) => {
+                if (performance.measure) {
+                    performance.measure(name, startMark, endMark);
+                    const measure = performance.getEntriesByName(name)[0];
+                    console.log(`${name}: ${measure.duration.toFixed(2)}ms`);
+                    return measure.duration;
+                }
+            }
+        };
+        
+        // 脚本加载管理
+        const scriptLoader = {
+            scripts: ['config.js', 'backend-service.js', 'middleware-api.js', 'frontend-controller.js'],
+            loadedCount: 0,
+            
+            init() {
+                this.scripts.forEach(script => {
+                    const scriptElement = document.querySelector(`script[src="${script}"]`);
+                    if (scriptElement) {
+                        scriptElement.addEventListener('load', () => this.onScriptLoaded(script));
+                        scriptElement.addEventListener('error', () => this.onScriptError(script));
+                    }
+                });
+            },
+            
+            onScriptLoaded(script) {
+                this.loadedCount++;
+                console.log(`脚本加载完成: ${script} (${this.loadedCount}/${this.scripts.length})`);
+                
+                if (this.loadedCount === this.scripts.length) {
+                    this.onAllScriptsLoaded();
+                }
+            },
+            
+            onScriptError(script) {
+                console.error(`脚本加载失败: ${script}`);
+                showError(`关键脚本加载失败: ${script}`);
+            },
+            
+            onAllScriptsLoaded() {
+                performanceMetrics.measure('脚本加载总时间', 'navigationStart', 'scriptLoadEnd');
+                initializeApplication();
+            }
+        };
+        
+        // 系统初始化
+        async function initializeApplication() {
+            try {
+                performanceMetrics.mark('appInitStart');
+                console.log('正在初始化企购内购信息助手系统...');
+                
+                // 检查关键依赖
+                if (!window.Config || !window.BackendService || !window.MiddlewareAPI) {
+                    throw new Error('关键依赖未加载');
+                }
+                
+                // 初始化前端控制器
+                if (!window.frontendController) {
+                    window.frontendController = new FrontendController();
+                    console.log('FrontendController 初始化完成');
+                }
+                
+                // 并行初始化各个模块
+                await Promise.all([
+                    initializeNavigation(),
+                    initializeMobileNavigation(),
+                    initializeDataCollection()
+                ]);
+                
+                // 启动性能监控
+                startPerformanceMonitoring();
+                
+                performanceMetrics.mark('appInitEnd');
+                performanceMetrics.measure('应用初始化时间', 'appInitStart', 'appInitEnd');
+                
+                console.log('系统初始化完成！');
+                showMessage('系统初始化完成', 'success');
+                
+            } catch (error) {
+                console.error('系统初始化失败:', error);
+                showError('系统初始化失败，请刷新页面重试');
+                
+                // 显示详细错误信息（开发环境）
+                if (window.location.hostname === 'localhost') {
+                    console.group('初始化错误详情');
+                    console.error('错误堆栈:', error.stack);
+                    console.error('全局对象:', {
+                        Config: !!window.Config,
+                        BackendService: !!window.BackendService,
+                        MiddlewareAPI: !!window.MiddlewareAPI,
+                        FrontendController: !!window.FrontendController
+                    });
+                    console.groupEnd();
+                }
+            }
+        }
+
+        // 初始化导航功能
+        async function initializeNavigation() {
+            try {
+                const navLinks = document.querySelectorAll('.nav-link');
+                const sections = document.querySelectorAll('.section-content');
+                
+                if (navLinks.length === 0 || sections.length === 0) {
+                    console.warn('导航元素未找到');
+                    return;
+                }
+                
+                // 使用事件委托优化性能
+                const navContainer = navLinks[0].parentElement;
+                navContainer.addEventListener('click', (e) => {
+                    const link = e.target.closest('.nav-link');
+                    if (!link) return;
+                    
+                    e.preventDefault();
+                    handleNavigationClick(link, navLinks, sections);
+                });
+                
+                console.log('导航功能初始化完成');
+            } catch (error) {
+                console.error('导航初始化失败:', error);
+            }
+        }
+
+        // 处理导航点击
+        function handleNavigationClick(link, navLinks, sections) {
+            try {
+                // 移除所有激活状态
+                navLinks.forEach(l => l.classList.remove('bg-neutral-100', 'border-l-4', 'border-primary'));
+                sections.forEach(s => s.classList.add('hidden'));
+                
+                // 添加激活状态
+                link.classList.add('bg-neutral-100', 'border-l-4', 'border-primary');
+                
+                // 显示对应的内容区域
+                const targetId = link.getAttribute('data-target');
+                const targetSection = document.getElementById(targetId);
+                
+                if (targetSection) {
+                    targetSection.classList.remove('hidden');
+                    targetSection.classList.add('fade-in');
+                    
+                    // 更新页面标题
+                    const pageTitle = document.getElementById('page-title');
+                    if (pageTitle) {
+                        const titleText = link.querySelector('span')?.textContent || '未知页面';
+                        pageTitle.textContent = titleText;
+                        document.title = `${titleText} - 企购内购信息助手`;
+                    }
+                    
+                    // 更新URL（可选）
+                    if (history.pushState) {
+                        const newUrl = `${window.location.pathname}#${targetId}`;
+                        history.pushState({ targetId }, '', newUrl);
+                    }
+                } else {
+                    console.warn(`目标section未找到: ${targetId}`);
+                }
+            } catch (error) {
+                console.error('导航处理失败:', error);
+            }
+        }
+
+        // 初始化移动端导航
+        async function initializeMobileNavigation() {
+            try {
+                const elements = {
+                    toggle: document.getElementById('mobile-nav-toggle'),
+                    nav: document.getElementById('mobile-nav'),
+                    content: document.getElementById('mobile-nav-content'),
+                    close: document.getElementById('mobile-nav-close'),
+                    links: document.querySelectorAll('.mobile-nav-link')
+                };
+                
+                if (!elements.toggle || !elements.nav || !elements.content) {
+                    console.warn('移动端导航元素未找到');
+                    return;
+                }
+                
+                // 打开移动端导航
+                elements.toggle.addEventListener('click', () => {
+                    elements.nav.classList.remove('hidden');
+                    requestAnimationFrame(() => {
+                        elements.content.classList.remove('-translate-x-full');
+                    });
+                });
+                
+                // 关闭移动端导航
+                const closeMobileNav = () => {
+                    elements.content.classList.add('-translate-x-full');
+                    setTimeout(() => {
+                        elements.nav.classList.add('hidden');
+                    }, 300);
+                };
+                
+                if (elements.close) {
+                    elements.close.addEventListener('click', closeMobileNav);
+                }
+                
+                elements.nav.addEventListener('click', (e) => {
+                    if (e.target === elements.nav) {
+                        closeMobileNav();
+                    }
+                });
+                
+                // 移动端导航链接点击
+                elements.links.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        
+                        // 移除所有激活状态
+                        elements.links.forEach(l => l.classList.remove('bg-neutral-100', 'border-l-4', 'border-primary'));
+                        
+                        // 添加激活状态
+                        link.classList.add('bg-neutral-100', 'border-l-4', 'border-primary');
+                        
+                        // 处理导航
+                        const targetId = link.getAttribute('data-target');
+                        const targetSection = document.getElementById(targetId);
+                        
+                        if (targetSection) {
+                            document.querySelectorAll('.section-content').forEach(s => s.classList.add('hidden'));
+                            targetSection.classList.remove('hidden');
+                            targetSection.classList.add('fade-in');
+                            
+                            // 更新页面标题
+                            const pageTitle = document.getElementById('page-title');
+                            if (pageTitle) {
+                                const titleText = link.querySelector('span')?.textContent || '未知页面';
+                                pageTitle.textContent = titleText;
+                            }
+                        }
+                        
+                        closeMobileNav();
+                    });
+                });
+                
+                console.log('移动端导航初始化完成');
+            } catch (error) {
+                console.error('移动端导航初始化失败:', error);
+            }
+        }
+
+        // 初始化数据采集
+        async function initializeDataCollection() {
+            try {
+                // 启动数据采集调度器
+                startDataCollectionScheduler();
+                
+                // 立即加载一次数据
+                if (window.frontendController) {
+                    await window.frontendController.loadInitialData();
+                }
+                
+                console.log('数据采集初始化完成');
+            } catch (error) {
+                console.error('数据采集初始化失败:', error);
+            }
+        }
+
+        // 启动数据采集调度器
+        function startDataCollectionScheduler() {
+            const interval = 5 * 60 * 1000; // 5分钟
+            let lastRefreshTime = 0;
+            
+            const scheduler = setInterval(async () => {
+                try {
+                    // 避免频繁刷新
+                    const now = Date.now();
+                    if (now - lastRefreshTime < interval * 0.8) {
+                        return;
+                    }
+                    
+                    if (window.frontendController && !document.hidden) {
+                        await window.frontendController.loadInitialData();
+                        lastRefreshTime = now;
+                        console.log('数据自动刷新完成');
+                    }
+                } catch (error) {
+                    console.error('数据自动刷新失败:', error);
+                }
+            }, interval);
+            
+            // 页面可见性变化时的处理
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden && window.frontendController) {
+                    // 页面重新可见时刷新数据
+                    window.frontendController.loadInitialData().catch(console.error);
+                }
+            });
+            
+            return scheduler;
+        }
+
+        // 显示消息（统一的消息显示函数）
+        function showMessage(message, type = 'info', duration = 3000) {
+            try {
+                const colors = {
+                    success: 'bg-green-500',
+                    error: 'bg-red-500',
+                    info: 'bg-blue-500',
+                    warning: 'bg-yellow-500'
+                };
+
+                const icons = {
+                    success: 'fa-check-circle',
+                    error: 'fa-exclamation-circle',
+                    info: 'fa-info-circle',
+                    warning: 'fa-exclamation-triangle'
+                };
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-4 rounded-lg shadow-xl z-50 transform transition-all duration-300 max-w-md`;
+                messageDiv.style.transform = 'translateX(400px)';
+                messageDiv.style.opacity = '0';
+                
+                messageDiv.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="fa ${icons[type]} mr-3 text-xl"></i>
+                        <div class="flex-1">
+                            <p class="font-medium">${message}</p>
+                            <p class="text-xs opacity-75 mt-1">${new Date().toLocaleTimeString()}</p>
+                        </div>
+                        <button class="ml-4 hover:opacity-75 transition-opacity" onclick="this.parentElement.parentElement.remove()">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                
+                document.body.appendChild(messageDiv);
+                
+                requestAnimationFrame(() => {
+                    messageDiv.style.transform = 'translateX(0)';
+                    messageDiv.style.opacity = '1';
+                });
+                
+                const hideMessage = () => {
+                    messageDiv.style.transform = 'translateX(400px)';
+                    messageDiv.style.opacity = '0';
+                    setTimeout(() => {
+                        if (messageDiv.parentElement) {
+                            messageDiv.remove();
+                        }
+                    }, 300);
+                };
+                
+                const timeoutId = setTimeout(hideMessage, duration);
+                
+                messageDiv.addEventListener('mouseenter', () => {
+                    clearTimeout(timeoutId);
+                });
+                
+                messageDiv.addEventListener('mouseleave', () => {
+                    setTimeout(hideMessage, 1000);
+                });
+                
+            } catch (error) {
+                console.error('显示消息失败:', error);
+                alert(message);
+            }
+        }
+
+        // 显示错误消息（兼容性函数）
+        function showError(message) {
+            showMessage(message, 'error', 5000);
+        }
+
+        // 启动性能监控
+        function startPerformanceMonitoring() {
+            try {
+                // 监控页面加载性能
+                if ('performance' in window && performance.timing) {
+                    const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+                    console.log(`页面加载时间: ${loadTime}ms`);
+                    
+                    // 记录性能指标
+                    if ('sendBeacon' in navigator) {
+                        const metrics = {
+                            loadTime,
+                            timestamp: Date.now(),
+                            userAgent: navigator.userAgent,
+                            url: window.location.href
+                        };
+                        
+                        // 可以发送到分析服务器
+                        // navigator.sendBeacon('/api/performance', JSON.stringify(metrics));
+                    }
+                }
+                
+                // 监控内存使用（Chrome）
+                if (performance.memory) {
+                    setInterval(() => {
+                        const memory = {
+                            used: Math.round(performance.memory.usedJSHeapSize / 1024 / 1024),
+                            total: Math.round(performance.memory.totalJSHeapSize / 1024 / 1024),
+                            limit: Math.round(performance.memory.jsHeapSizeLimit / 1024 / 1024)
+                        };
+                        
+                        // 内存使用过高时警告
+                        if (memory.used / memory.limit > 0.8) {
+                            console.warn('内存使用过高:', memory);
+                            showMessage('内存使用过高，建议刷新页面', 'warning');
+                        }
+                    }, 30000); // 每30秒检查一次
+                }
+                
+            } catch (error) {
+                console.error('性能监控启动失败:', error);
+            }
+        }
+
+        // 全局错误处理
+        window.addEventListener('error', function(e) {
+            console.error('全局错误:', e.error);
+            
+            // 发送错误报告（如果配置了）
+            if (window.Config?.errorReporting) {
+                const errorData = {
+                    message: e.message,
+                    filename: e.filename,
+                    lineno: e.lineno,
+                    colno: e.colno,
+                    stack: e.error?.stack,
+                    timestamp: Date.now(),
+                    userAgent: navigator.userAgent
+                };
+                
+                // 可以发送到错误监控服务
+                // fetch('/api/errors', { method: 'POST', body: JSON.stringify(errorData) });
+            }
+            
+            // 显示用户友好的错误信息
+            if (!e.filename || !e.filename.includes('extension')) {
+                showError('系统出现错误，请刷新页面重试');
+            }
+        });
+
+        // 未处理的Promise拒绝
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('未处理的Promise拒绝:', e.reason);
+            
+            // 记录Promise错误
+            if (window.Config?.errorReporting) {
+                const errorData = {
+                    type: 'unhandledrejection',
+                    reason: e.reason?.toString(),
+                    timestamp: Date.now()
+                };
+                
+                // 可以发送到错误监控服务
+            }
+            
+            e.preventDefault(); // 防止错误在控制台显示
+        });
+
+        // 页面卸载时清理资源
+        window.addEventListener('beforeunload', function() {
+            try {
+                // 清理定时器
+                if (window.frontendController) {
+                    if (window.frontendController.refreshInterval) {
+                        clearInterval(window.frontendController.refreshInterval);
+                    }
+                    window.frontendController.destroy();
+                }
+                
+                // 清理所有定时器
+                const highestTimeoutId = setTimeout(() => {});
+                for (let i = 0; i < highestTimeoutId; i++) {
+                    clearTimeout(i);
+                }
+                
+                console.log('页面卸载资源清理完成');
+            } catch (error) {
+                console.error('页面卸载清理失败:', error);
+            }
+        });
+
+        // 初始化脚本加载器
+        document.addEventListener('DOMContentLoaded', function() {
+            scriptLoader.init();
+            performanceMetrics.mark('scriptLoadEnd');
+        });
+    </script>
+</body>
+</html>
