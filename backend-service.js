@@ -11,6 +11,24 @@ class XiaohongshuAPI {
         this.rateLimiter = new Map();
         this.lastRequestTime = 0;
         this.minRequestInterval = 1000; // 最小请求间隔1秒
+        this.errorLog = [];
+    }
+    
+    // 统一错误处理函数
+    handleAPIError(operation, error) {
+        const errorInfo = {
+            timestamp: new Date().toISOString(),
+            operation: operation,
+            error: error.message,
+            statusCode: error.status || 'unknown'
+        };
+        this.errorLog.push(errorInfo);
+        console.error(`[API错误] ${operation}:`, error);
+        
+        // 限制错误日志长度
+        if (this.errorLog.length > 50) {
+            this.errorLog.shift();
+        }
     }
 
     // 检查API是否活跃
@@ -49,13 +67,14 @@ class XiaohongshuAPI {
             });
 
             if (!response.ok) {
-                throw new Error(`搜索请求失败: ${response.status}`);
+                console.log(`搜索请求失败: ${response.status}，将返回模拟数据`);
+                return this.getMockSearchResults(keyword, limit);
             }
 
             const data = await response.json();
             return this.processSearchResults(data);
         } catch (error) {
-            console.error('小红书搜索失败:', error);
+            this.handleAPIError('searchProducts', error);
             return this.getMockSearchResults(keyword, limit);
         }
     }
@@ -259,13 +278,15 @@ class XiaohongshuAPI {
             });
 
             if (!response.ok) {
-                throw new Error(`热门商品请求失败: ${response.status}`);
+                this.handleAPIError('getHotProducts', { message: `热门商品请求失败: ${response.status}`, status: response.status });
+                console.log(`热门商品请求失败: ${response.status}，将返回模拟数据`);
+                return this.getMockSearchResults('热门商品', limit);
             }
 
             const data = await response.json();
             return this.processSearchResults(data);
         } catch (error) {
-            console.error('获取热门商品失败:', error);
+            this.handleAPIError('getHotProducts', error);
             return this.getMockSearchResults('热门商品', limit);
         }
     }
@@ -828,105 +849,63 @@ class XiaohongshuExternalAPI {
     }
 }
 
-class WeiboAPI {
-    constructor() {
-        this.baseURL = 'https://api.weibo.com';
-        this.isActive = true;
-    }
+// WeiboAPI class already defined above
 
-    isActive() {
-        return this.isActive;
-    }
+// DouyinAPI class already defined above
 
-    async collect() {
-        // 模拟微博数据采集
-        return [
-            { id: 'wb_001', title: '公司团购活动', platform: 'weibo', content: '...', createdAt: new Date().toISOString() }
-        ];
-    }
-}
+// DataCollector class already defined above
 
-class DouyinAPI {
-    constructor() {
-        this.baseURL = 'https://api.douyin.com';
-        this.isActive = false; // 模拟未激活状态
-    }
+// DataCleaner class already defined above
 
-    isActive() {
-        return this.isActive;
-    }
+// DataClassifier class already defined above
 
-    async collect() {
-        // 模拟抖音数据采集
-        return [];
-    }
-}
-
-// 数据处理器类
-class DataCollector {
-    constructor(externalAPIs) {
-        this.externalAPIs = externalAPIs;
-    }
-
-    async collectFromXiaohongshu() {
-        return await this.externalAPIs.xiaohongshu.collect();
-    }
-
-    async collectFromWeibo() {
-        return await this.externalAPIs.weibo.collect();
-    }
-
-    async collectFromDouyin() {
-        return await this.externalAPIs.douyin.collect();
-    }
-}
-
-class DataCleaner {
-    async clean(rawData) {
-        // 模拟数据清理逻辑
-        return rawData
-            .filter(item => item.title && item.content) // 过滤无效数据
-            .map(item => ({
-                ...item,
-                title: item.title.trim(),
-                content: item.content.trim(),
-                cleanedAt: new Date().toISOString()
-            }));
-    }
-}
-
-class DataClassifier {
-    async classify(cleanedData) {
-        // 模拟数据分类逻辑
-        return cleanedData.map(item => ({
-            ...item,
-            category: this.classifyCategory(item),
-            priority: this.calculatePriority(item),
-            status: 'pending',
-            classifiedAt: new Date().toISOString()
-        }));
-    }
-
-    classifyCategory(item) {
-        const categories = ['服装', '数码', '美妆', '食品'];
-        return categories[Math.floor(Math.random() * categories.length)];
-    }
-
-    calculatePriority(item) {
-        return Math.floor(Math.random() * 5) + 1;
-    }
-}
-
-class DataValidator {
-    async validate(data) {
-        // 模拟数据验证逻辑
-        return data.filter(item => this.isValid(item));
-    }
-
-    isValid(item) {
-        return item.title && item.content && item.platform;
-    }
-}
+// DataValidator class already defined above
 
 // 导出后台服务实例
-window.BackendService = BackendService;
+const backendService = new BackendService();
+
+// 仅在Node.js环境中导出模块
+if (typeof module !== 'undefined' && module.exports) {
+    exports.XiaohongshuAPI = XiaohongshuAPI;
+    exports.WeiboAPI = WeiboAPI;
+    exports.DouyinAPI = DouyinAPI;
+    exports.DataCollector = DataCollector;
+    exports.DataCleaner = DataCleaner;
+    exports.DataClassifier = DataClassifier;
+    exports.DataValidator = DataValidator;
+    exports.BackendService = BackendService;
+    exports.backendService = backendService;
+}
+
+// ES模块导出
+try {
+    if (typeof module !== 'undefined' && typeof exports !== 'undefined' && typeof require !== 'undefined') {
+        // CommonJS环境
+        module.exports = {
+            XiaohongshuAPI,
+            WeiboAPI,
+            DouyinAPI,
+            DataCollector,
+            DataCleaner,
+            DataClassifier,
+            DataValidator,
+            BackendService,
+            backendService
+        };
+    } else {
+        // 如果在浏览器环境
+        if (typeof window !== 'undefined') {
+            window.XiaohongshuAPI = XiaohongshuAPI;
+            window.WeiboAPI = WeiboAPI;
+            window.DouyinAPI = DouyinAPI;
+            window.DataCollector = DataCollector;
+            window.DataCleaner = DataCleaner;
+            window.DataClassifier = DataClassifier;
+            window.DataValidator = DataValidator;
+            window.BackendService = BackendService;
+            window.backendService = backendService;
+        }
+    }
+} catch (e) {
+    // 静默忽略导出错误
+}

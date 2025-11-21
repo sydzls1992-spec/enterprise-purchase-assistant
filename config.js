@@ -328,11 +328,21 @@ class ArchitectureIntegrator {
     // 销毁实例
     destroy() {
         if (this.frontend) {
-            this.frontend.destroy();
+            // 检查frontend是否有destroy方法
+            if (typeof this.frontend.destroy === 'function') {
+                this.frontend.destroy();
+            } else {
+                console.log('FrontendController没有destroy方法，跳过销毁');
+            }
         }
         
         if (this.backend) {
-            this.backend.cleanup();
+            // 检查backend是否有cleanup方法
+            if (typeof this.backend.cleanup === 'function') {
+                this.backend.cleanup();
+            } else {
+                console.log('BackendService没有cleanup方法，跳过清理');
+            }
         }
         
         console.log('三层架构已销毁');

@@ -1930,6 +1930,13 @@
             const closeModalBtn = document.getElementById('close-modal-btn');
             const startCrawlBtn = document.getElementById('start-crawl-btn');
             const crawlStatus = document.getElementById('crawl-status');
+            
+            // 为开始抓取按钮添加事件监听器
+            if (startCrawlBtn && window.frontendController) {
+                startCrawlBtn.addEventListener('click', () => {
+                    frontendController.triggerXiaohongshuCollection();
+                });
+            }
 
             // 导航切换
             navLinks.forEach(link => {
@@ -1985,7 +1992,7 @@
             });
 
             // 信息详情模态框
-            document.querySelectorAll('.text-primary.hover\\:text-blue-700, .text-primary.hover:text-blue-700').forEach(btn => {
+            document.querySelectorAll('.text-primary.hover\\:text-blue-700').forEach(btn => {
                 if (btn.textContent.trim() === '查看') {
                     btn.addEventListener('click', function() {
                         infoDetailModal.classList.remove('hidden');
